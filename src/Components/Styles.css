@@ -1,0 +1,22 @@
+.toolbarIcon {
+    display: 'flex';
+    align-items: 'center';
+    justify-content: 'flex-end';
+    padding: '0 8px';
+}
+
+.toolbar {
+    padding-right: 24;
+}
+
+.menuButton {
+    margin-right: 36;
+}
+
+.menuButtonHidden {
+    display: 'none';
+}
+
+.title {
+    flex-grow: 1;
+}
