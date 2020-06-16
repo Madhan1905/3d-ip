@@ -229,12 +229,12 @@ const LoginScreen = (props) => {
                     {!isLogin && getSignupForm()}
                     <div className='signup'>
                         <div>
-                            New User?
+                            {isLogin ? 'New User?' : 'Already Registered?'}
                         <span className='custom-link' onClick={() => {
                                 setError(false);
                                 setIsLogin(!isLogin)
                             }}>
-                                Sign-up
+                                {isLogin ? 'Sign-up' : 'Login'}
                         </span>
                         </div>
                     </div>
