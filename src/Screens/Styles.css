@@ -102,7 +102,32 @@
     justify-content: center;
 }
 
+.users-main-body {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    height: '100vh';
+    overflow: 'auto';
+    padding-top:10vh;
+    background-color: whitesmoke;
+}
+
 .custom-link {
     cursor: pointer;
     color: turquoise;
+}
+
+.dashboard-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.feedback {
+    display: flex;
+    flex-direction: row;
+}
+
+.rating {
+    cursor: pointer;
 }

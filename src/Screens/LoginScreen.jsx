@@ -3,7 +3,7 @@ import './Styles.css';
 import TextInput from '../Components/TextInputComponent';
 import PersonIcon from '@material-ui/icons/Person';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
-import { authenticate, register } from '../Services/FirebaseService';
+import { authenticate, register, createUser } from '../Services/FirebaseService';
 import AuthenticationService from '../Services/AuthenticationService';
 
 const LoginScreen = (props) => {
@@ -35,8 +35,10 @@ const LoginScreen = (props) => {
             setLoading(true)
             authenticate(userId, password)
                 .then(() => {
-                    AuthenticationService.storeUserToken(userId);
-                    props.history.push('/dashboard');
+                    createUser(userId).then(() => {
+                        AuthenticationService.storeUserToken(userId);
+                        props.history.push('/dashboard');
+                    })
                 }).catch(() => {
                     setLoading(false)
                     setError(true)
@@ -230,12 +232,12 @@ const LoginScreen = (props) => {
                     <div className='signup'>
                         <div>
                             {isLogin ? 'New User?' : 'Already Registered?'}
-                        <span className='custom-link' onClick={() => {
+                            <span className='custom-link' onClick={() => {
                                 setError(false);
                                 setIsLogin(!isLogin)
                             }}>
                                 {isLogin ? 'Sign-up' : 'Login'}
-                        </span>
+                            </span>
                         </div>
                     </div>
                 </div>

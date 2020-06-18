@@ -13,9 +13,13 @@ import TimelineIcon from '@material-ui/icons/Timeline';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import MenuIcon from '@material-ui/icons/Menu';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import './Styles.css';
+import { Link } from 'react-router-dom';
+import AuthenticationService from '../Services/AuthenticationService';
+import { logOutUser } from '../Services/FirebaseService';
 
 const drawerWidth = '15vw';
 const SideNavComponent = (props) => {
@@ -35,14 +39,23 @@ const SideNavComponent = (props) => {
             color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerOpen}
-            style = {open ? {display:'none'} : {marginRight:25}}
+            style={open ? { display: 'none' } : { marginRight: 25 }}
           >
             <MenuIcon />
           </IconButton>
           <Typography component="h1" variant="h6" color="inherit" noWrap className='title'>
-            Dashboard
+            {props.title}
           </Typography>
-
+          <Link to="/login">
+            <ExitToAppIcon 
+              onClick={() => {
+                logOutUser(AuthenticationService.getUserId()).then(() => {
+                  AuthenticationService.removeUserToken();
+                })
+              }} 
+              style = {{color:"white"}}
+            />
+          </Link>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -55,7 +68,7 @@ const SideNavComponent = (props) => {
             className='logo-image'
             src={require('../Images/full-logo.png')}
             alt="loginImage"
-            style = {{contain:"auto",width:'50%',height:"40%"}}
+            style={{ contain: "auto", width: '50%', height: "40%" }}
           />
           <IconButton onClick={handleDrawerClose}>
             <ChevronLeftIcon />
@@ -64,24 +77,31 @@ const SideNavComponent = (props) => {
         <Divider />
         <List>
           <div>
-            <ListItem button>
-              <ListItemIcon>
-                <DashboardIcon />
-              </ListItemIcon>
-              <ListItemText primary="Dashboard" />
-            </ListItem>
-            <ListItem button>
-              <ListItemIcon>
-                <PeopleIcon />
-              </ListItemIcon>
-              <ListItemText primary="Users" />
-            </ListItem>
-            <ListItem button>
-              <ListItemIcon>
-                <TimelineIcon />
-              </ListItemIcon>
-              <ListItemText primary="Analytics" />
-            </ListItem>
+            <Link to='/dashboard' style={{ textDecoration: 'none', color: 'black' }}>
+              <ListItem button>
+                <ListItemIcon>
+                  <DashboardIcon />
+                </ListItemIcon>
+                <ListItemText primary="Dashboard" />
+              </ListItem>
+            </Link>
+            {(AuthenticationService.getUserId() === "admin@ip.com") &&
+              <Link to='/users' style={{ textDecoration: 'none', color: 'black' }}>
+                <ListItem button>
+                  <ListItemIcon>
+                    <PeopleIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Users" />
+                </ListItem>
+              </Link>}
+            <Link to="/analytics" style={{ textDecoration: 'none', color: 'black' }}>
+              <ListItem button>
+                <ListItemIcon>
+                  <TimelineIcon />
+                </ListItemIcon>
+                <ListItemText primary="Analytics" />
+              </ListItem>
+            </Link>
           </div>
         </List>
       </Drawer>

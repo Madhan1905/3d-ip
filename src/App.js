@@ -6,7 +6,7 @@ import DashboardScreen from './Screens/DashboardScreen';
 import ErrorScreen from './Screens/ErrorScreen';
 import AuthenticatedRoute from './Components/AuthenticatedRoute';
 import UsersScreen from './Screens/UsersScreen';
-import SideNavComponent from './Components/SideNavComponent';
+import AnalyticsScreen from './Screens/AnalyticsScreen';
 
 var firebaseConfig = {
   apiKey: "AIzaSyAOzqVTALw1DnMW97LDXmlAKXKTHZB4Ass",
@@ -28,6 +28,7 @@ const App = () => {
           <Route path = '/login' component = {LoginScreen}/>
           <AuthenticatedRoute path = '/dashboard' component = {DashboardScreen}/>
           <AuthenticatedRoute path = '/users' component = {UsersScreen}/>
+          <AuthenticatedRoute path = '/analytics' component = {AnalyticsScreen}/>
           <Route component= {ErrorScreen}/>
         </Switch>
       </Router>

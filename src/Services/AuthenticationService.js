@@ -5,10 +5,13 @@ class AuthenticationService {
     getUserId() {
         let user = sessionStorage.getItem('authenticatedUser');
         if(user === null) {
-            return false;
+            return "";
         } else {
-            return true;
+            return user;
         }
+    }
+    removeUserToken() {
+        sessionStorage.removeItem('authenticatedUser');
     }
 }
 
