@@ -68,7 +68,7 @@ const SideNavComponent = (props) => {
             className='logo-image'
             src={require('../Images/full-logo.png')}
             alt="loginImage"
-            style={{ contain: "auto", width: '50%', height: "40%" }}
+            style={{ contain: "auto", width: '50%', height: "60%" }}
           />
           <IconButton onClick={handleDrawerClose}>
             <ChevronLeftIcon />
@@ -85,7 +85,7 @@ const SideNavComponent = (props) => {
                 <ListItemText primary="Dashboard" />
               </ListItem>
             </Link>
-            {(AuthenticationService.getUserId() === "admin@ip.com") &&
+            {(AuthenticationService.getUserId() === "arun@if.com" || AuthenticationService.getUserId() === "mg_vel@if.com") &&
               <Link to='/users' style={{ textDecoration: 'none', color: 'black' }}>
                 <ListItem button>
                   <ListItemIcon>

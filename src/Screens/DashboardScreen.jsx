@@ -1,116 +1,323 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import SideNavComponent from '../Components/SideNavComponent';
-import SentimentVeryDissatisfiedIcon from '@material-ui/icons/SentimentVeryDissatisfied';
-import SentimentDissatisfiedIcon from '@material-ui/icons/SentimentDissatisfied';
-import SentimentSatisfiedIcon from '@material-ui/icons/SentimentSatisfied';
-import SentimentSatisfiedAltIcon from '@material-ui/icons/SentimentSatisfiedAlt';
-import SentimentVerySatisfiedIcon from '@material-ui/icons/SentimentVerySatisfied';
-import Axios from 'axios';
-import { storeRenderDetails } from '../Services/FirebaseService';
+import SingleUnit from '../Components/SingleUnit';
+import Edit from '@material-ui/icons/Edit';
+import { createProduct, fetchAllProducts, updateProduct } from '../Services/FirebaseService';
 
 const DashboardScreen = (props) => {
-    const inputRef = useRef(null);
-    const [imageSrc, setImageSrc] = useState("");
-    const [rating, setRating] = useState([false, false, false, false, false]);
-    const [disabled, setDisbaled] = useState(true);
+    const [inputFileds, setInputFields] = useState(["", "", "", "", "", "", "no", "", ""]);
+    const [errorFields, setErrorFields] = useState([false, false, false, false, false, false, false, false, false]);
+    const [picture, setPicture] = useState(null);
+    const [pictureName, setPictureName] = useState("Upload Picture");
     const [loading, setLoading] = useState(false);
-    const [progressWidth,setProgressWidth] = useState("0%");
-    const [renderTime,setRenderTime] = useState(0);
-    const [submit,setSubmit] = useState("Submit");
+    const [progressWidth, setProgressWidth] = useState("0%");
+    const [showButtons, setShowButtons] = useState(true);
+    const [showAddBody, setShowAddBody] = useState(null);
+    const [products, setProducts] = useState([]);
+    const [productId, setProductId] = useState(null);
 
-    const changeRating = (index) => {
-        let tempArray = rating.slice();
-        tempArray.fill(false, 0);
-        tempArray.fill(true, 0, index + 1);
-        setRating(tempArray);
-        setDisbaled(false);
+    const updateValue = (value, index) => {
+        let tempArray = inputFileds.slice();
+        tempArray[index] = value;
+        setInputFields(tempArray)
     }
 
-    const showImage = () => {
+    const updateErrorFields = (value, index) => {
+        let tempArray = errorFields.slice();
+        tempArray[index] = value;
+        setErrorFields(tempArray);
+    }
+
+    const updateAllErrorFields = () => {
+        let tempArray = [inputFileds[0].length < 1, false, inputFileds[2].length < 1, 
+            inputFileds[3].length < 1, inputFileds[4].length < 1, picture == null, inputFileds[5].length < 1, false, inputFileds[8].length < 1 ];
+        setErrorFields(tempArray);
+    }
+
+    const submit = () => {
+        setProgressWidth("25%")
+        if (inputFileds[0].length > 0 && inputFileds[2].length > 0 && inputFileds[3].length > 0 && inputFileds[4].length > 0 && 
+            inputFileds[5].length > 0 && (picture != null || productId)) {
+            setLoading(true)
+            if(productId) {
+                updateProduct(inputFileds, picture, setProgressWidth, productId)
+                .then(() => {
+                    setInputFields(["", "", "", "", "", "", "no", "",""]);
+                    setProductId(null);
+                    setPicture(null);
+                    setPictureName("Upload Picture");
+                    setLoading(false);
+                }).catch(error => {
+                    setLoading(false);
+                    console.log(error)
+                })
+
+            } else {
+                createProduct(inputFileds, picture, setProgressWidth)
+                .then(() => {
+                    setInputFields(["", "", "", "", "", "", "no", "",""]);
+                    setPicture(null);
+                    setPictureName("Upload Picture");
+                    setLoading(false);
+                }).catch(error => {
+                    setLoading(false);
+                    console.log(error)
+                })
+            }
+        } else {
+            updateAllErrorFields();
+        }
+    }
+
+    const addProductBody = () => {
         return (
-            <div className='dashboard-main'>
-                <img alt="acquired" src={imageSrc}></img><br />
-                <div className='feedback'>
-                    <span style={{ marginRight: '2vw' }}>
-                        Please provide your feedback for the rendered image
-                    </span>
-                    <div className='rating'>
-                        <SentimentVeryDissatisfiedIcon onClick={() => changeRating(0)} style={{ color: rating[0] ? 'steelBlue' : "black" }} />
-                        <SentimentDissatisfiedIcon onClick={() => changeRating(1)} style={{ color: rating[1] ? 'steelBlue' : "black" }} />
-                        <SentimentSatisfiedIcon onClick={() => changeRating(2)} style={{ color: rating[2] ? 'steelBlue' : "black" }} />
-                        <SentimentSatisfiedAltIcon onClick={() => changeRating(3)} style={{ color: rating[3] ? 'steelBlue' : "black" }} />
-                        <SentimentVerySatisfiedIcon onClick={() => changeRating(4)} style={{ color: rating[4] ? 'steelBlue' : "black" }} />
-                    </div>
-                </div>
-                <button className='btn btn-primary' disabled={disabled} onClick = {() => {
-                    setDisbaled(true);
-                    setSubmit("Submitting...");
-                    let ratingCount = rating.filter(value => value === true).length;
-                    storeRenderDetails(renderTime,ratingCount)
-                    .then(() => {
-                        setImageSrc("");
-                        setSubmit("Submit");
-                        setRating([false, false, false, false, false]);
+            <main className='main-body'>
+                {!loading && <>
+                    <form
+                        className='container form-group'
+                        onSubmit={e => {
+                            e.preventDefault();
+                            submit();
+                        }}
+                    >
+
+                        <div className="row product-input mb-4">
+                            <label className="col-2">Product Name:</label>
+                            <input
+                                type="text"
+                                className={`form-control col-4 ${errorFields[0] ? "is-invalid" : ""}`}
+                                placeholder={"Enter name of the Product"}
+                                onChange={(event) => {
+                                    updateValue(event.target.value, 0);
+                                    updateErrorFields(false, 0)
+                                }}
+                                value = {inputFileds[0]}
+                            />
+                            <label className="col-2">Tamil Name:</label>
+                            <input
+                                type="text"
+                                className={`form-control col-4 ${errorFields[1] ? "is-invalid" : ""}`}
+                                placeholder={"(Optional) Tamil Name"}
+                                onChange={(event) => {
+                                    updateValue(event.target.value, 1);
+                                    updateErrorFields(false, 1)
+                                }}
+                                value = {inputFileds[1]}
+                            />
+                        </div>
+                        <div className="row product-input mb-4">
+                            <label className="col-2">Quantity Type:</label>
+                            <select
+                                className="col-4"
+                                onChange={(event) => {
+                                    updateValue(event.target.value, 2);
+                                    updateErrorFields(false, 2)
+                                }}
+                                style={{ borderColor: errorFields[2] ? "red" : "grey" }}
+                                value = {inputFileds[2]}
+                            >
+                                <option value="default">--Select--</option>
+                                <option value="gram">Gram</option>
+                                <option value="kg">KiloGram</option>
+                            </select>
+                            <label className="col-2">Quantity:</label>
+                            <input
+                                type="number"
+                                min="0"
+                                className={`form-control col-4 ${errorFields[3] ? "is-invalid" : ""}`}
+                                placeholder={"Enter quantity for the Product"}
+                                onChange={(event) => {
+                                    updateValue(event.target.value, 3);
+                                    updateErrorFields(false, 3)
+                                }}
+                                value = {inputFileds[3]}
+                            />
+                        </div>
+
+                        <div className="row product-input mb-4">
+                            <label className="col-2">Product Price:</label>
+                            <input
+                                type="number"
+                                min="0"
+                                className={`form-control col-4 ${errorFields[4] ? "is-invalid" : ""}`}
+                                placeholder={"Enter price of the Product"}
+                                onChange={(event) => {
+                                    updateValue(event.target.value, 4);
+                                    updateErrorFields(false, 4)
+                                }}
+                                value = {inputFileds[4]}
+                            />
+                            <label className="col-2">Selling Price:</label>
+                            <input
+                                type="number"
+                                min="0"
+                                className={`form-control col-4 ${errorFields[8] ? "is-invalid" : ""}`}
+                                placeholder={"Enter selling price of the Product"}
+                                onChange={(event) => {
+                                    updateValue(event.target.value, 8);
+                                    updateErrorFields(false, 8)
+                                }}
+                                value = {inputFileds[8]}
+                            />
+                        </div>
+
+                        <div className="row product-input mb-4">
+                            <label className="col-2">Category:</label>
+                            <select
+                                className="col-4"
+                                onChange={(event) => {
+                                    updateValue(event.target.value, 5);
+                                    updateErrorFields(false, 6)
+                                }}
+                                style={{ borderColor: errorFields[6] ? "red" : "grey" }}
+                                value = {inputFileds[5]}
+                            >
+                                <option value="default">--Select--</option>
+                                <option value="Chicken">Chicken</option>
+                                <option value="Mutton">Mutton</option>
+                                <option value="Other Poultry">Other Poultry</option>
+                                <option value="Eggs">Eggs</option>
+                                <option value="Spices & Masala">Spices & Masala</option>
+                                <option value="Offers">Offers</option>
+                            </select>
+
+                            <label className="col-2">Bestsellers:</label>
+                            <select
+                                className="col-4"
+                                onChange={(event) => {
+                                    updateValue(event.target.value, 6);
+                                }}
+                                value = {inputFileds[6]}
+                            >
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+
+                        <div className="row product-input">
+                            <label className="col-2">Description:</label>
+                            <input
+                                type="text"
+                                className={`form-control col-4 ${errorFields[7] ? "is-invalid" : ""}`}
+                                maxLength={70}
+                                placeholder={"Enter description of the Product"}
+                                onChange={(event) => {
+                                    updateValue(event.target.value, 7);
+                                    updateErrorFields(false, 7)
+                                }}
+                                value = {inputFileds[7]}
+                            />
+                            <label className="col-2">Select Picture:</label>
+                            <div className="custom-file col-4">
+                                <input
+                                    type="file"
+                                    className={'custom-file-input'}
+                                    accept={[".jpg", ".jpeg", ".png"]}
+                                    onChange={(event) => {
+                                        setPicture(event.target.files[0]);
+                                        setPictureName(event.target.files[0].name)
+                                    }}
+                                />
+                                <label
+                                    className="custom-file-label"
+                                    htmlFor="fileName"
+                                    style={{ textAlign: "left", borderColor: errorFields[5] ? "red" : "grey" }}
+                                >
+                                    {pictureName}
+                                </label>
+                            </div>
+                        </div>
+
+                        <div className='product-submit'>
+                            <button
+                                className='btn btn-success'
+                                style={{ width: '40%' }}
+                                type="submit"
+                            >
+                                {loading && <span className="spinner-border spinner-border-sm" role="status" />}
+                                {!loading && <span>Submit</span>}
+                            </button>
+                        </div>
+                    </form>
+                </>}
+            </main>
+        )
+    }
+
+    const allProductsBody = () => {
+        return (
+            <main className='single-product-main-body'>
+                {
+                    products.map((product,index) => {
+                        return (
+                            <div key = {index}>
+                                <div 
+                                    style = {{textAlignLast:"right"}}
+                                    onClick = {() => {
+                                        setInputFields([product.name, product.tamilName, 
+                                            product.quantity.split(" ")[1], product.quantity.split(" ")[0], 
+                                            product.price, product.category,product.bestseller,product.description,product.sellingPrice]);
+                                        setProductId(product.id);
+                                        setShowAddBody(true);
+                                    }}
+                                >
+                                    <Edit/>
+                                </div>
+                                <SingleUnit product = {product}/>
+                            </div>
+                        )
                     })
-                }}>
-                    {submit}
-                </button>
-            </div>
+                }
+            </main>
         )
     }
 
     return (
         <div style={{ display: 'flex' }}>
-            <SideNavComponent title = 'Dashboard' />
-            <main className='main-body'>
-                <input
-                    type='file' ref={inputRef}
-                    style={{ display: 'none' }}
-                    onChange={event => {
-                        let startDate = new Date();
-                        setLoading(true);
-                        setProgressWidth("25%");
-                        var formData = new FormData();
-                        formData.append('file', event.target.files[0])
-                        Axios.post("http://localhost:8080/hello", formData, {
-                            headers: { 'Content-Type': 'multipart/form-data' }
-                        }).then(() => {
+            <SideNavComponent title='Dashboard' />
+            {!loading && <>
+                {showButtons &&
+                <main className='main-body'>
+                    <button
+                        className="btn btn-success mb-5 w-25"
+                        onClick={() => {
+                            setLoading(true);
                             setProgressWidth("50%");
-                            Axios.get('http://localhost:8080/get', { responseType: 'arraybuffer' })
-                                .then(response => {
-                                    const base64 = btoa(
-                                        new Uint8Array(response.data).reduce(
-                                            (data, byte) => data + String.fromCharCode(byte),
-                                            '',
-                                        ),
-                                    );
-                                    setImageSrc("data:;base64," + base64);
-                                    setLoading(false);
-                                })
-                        })
-                        let endDate = new Date();
-                        setRenderTime((endDate.getTime() - startDate.getTime()));
-                    }}
-
-                />
-                {!loading && <>
-                    {(imageSrc === "") ? <>
-                        <button className='btn btn-primary' onClick={() => inputRef.current.click()}>
-                            Upload Document
-                    </button>
-                        <div>
-                            Click Here to get started
-                    </div>
-                    </> : showImage()}
+                            setShowButtons(false);
+                            setShowAddBody(false);
+                            fetchAllProducts().then(response => {
+                                setProgressWidth("75%")
+                                setLoading(false);
+                                setProducts(response)
+                            })
+                        }}
+                    >
+                        Show All products
+                </button>
+                    <button
+                        className="btn btn-success w-25"
+                        onClick={() => {
+                            setShowButtons(false);
+                            setShowAddBody(true)
+                        }}
+                    >
+                        Add product
+                </button>
+                </main>}
+                {!showButtons && <>
+                    {showAddBody && addProductBody()}
+                    {!showAddBody && allProductsBody()}
                 </>}
-                {loading && <>
-                    <div className = 'w-100' style = {{display:"flex",justifyContent:"center"}}>
-                    <div className="progress" style={{ width:  "75%"}}>
-                        <div className="progress-bar" role="progressbar" style={{ width: progressWidth }}></div>
+            </>}
+            {loading && <>
+                <main className='main-body'>
+                    <div className='w-100' style={{ display: "flex", justifyContent: "center" }}>
+                        <div className="progress" style={{ width: "75%" }}>
+                            <div className="progress-bar" role="progressbar" style={{ width: progressWidth }}></div>
+                        </div>
                     </div>
-                    </div>
-                </>}
-            </main>
+                </main>
+            </>}
         </div>
     )
 }

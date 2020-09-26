@@ -9,14 +9,14 @@ import UsersScreen from './Screens/UsersScreen';
 import AnalyticsScreen from './Screens/AnalyticsScreen';
 
 var firebaseConfig = {
-  apiKey: "AIzaSyAOzqVTALw1DnMW97LDXmlAKXKTHZB4Ass",
-  authDomain: "d-ip-fa2c8.firebaseapp.com",
-  databaseURL: "https://d-ip-fa2c8.firebaseio.com",
-  projectId: "d-ip-fa2c8",
-  storageBucket: "d-ip-fa2c8.appspot.com",
-  messagingSenderId: "627773397396",
-  appId: "1:627773397396:web:d08e9172deb9e2c470d781",
-  measurementId: "G-G0CX10VVTW"
+  apiKey: "AIzaSyAHYWo7RgaH9GUsmpqOQFnu9V7IGyu10Gs",
+  authDomain: "iconfresh-web.firebaseapp.com",
+  databaseURL: "https://iconfresh-web.firebaseio.com",
+  projectId: "iconfresh-web",
+  storageBucket: "iconfresh-web.appspot.com",
+  messagingSenderId: "736411123781",
+  appId: "1:736411123781:web:3510258915eb17a13e632c",
+  measurementId: "G-K1Q7FTVQP5"
 }
 
 const App = () => {

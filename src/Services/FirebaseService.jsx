@@ -1,7 +1,7 @@
-import firebase from "firebase/app";
-import AuthenticationService from "./AuthenticationService";
+import * as firebase from "firebase";
 require('firebase/auth');
 require("firebase/firestore");
+require("firebase/storage");
 
 export const authenticate = (userName, password) => {
     return new Promise((resolve, reject) => {
@@ -35,7 +35,13 @@ export const createUser = (userName) => {
             LoginTime: date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + " at "
                 + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds(),
         })
-            .then(res => resolve(res))
+        .then(res => {
+            resolve(res)
+        })
+        .catch(error => {
+            console.log(error)
+            reject(error)
+        })
     });
 }
 
@@ -70,38 +76,139 @@ export const getAllUsers = () => {
     });
 }
 
-export const storeRenderDetails = (time,rating) => {
+const createKeyword = (name) => {
+    let subName = '';
+    var array = [];
+    name.split('').map(letter => { 
+        subName += letter; 
+        array.push(subName)
+    })
+    return array;
+}
+
+export const fetchAllProducts = () => {
     return new Promise((resolve, reject) => {
         const dataBase = firebase.firestore();
-        let collectionRef = dataBase.collection('Users');
-        let userDocument = collectionRef.doc(AuthenticationService.getUserId());
-        userDocument.collection('Render Details').add({
-            time : time,
-            rating : rating
-        }).then(res => resolve(res))
+        let collectionRef = dataBase.collection('Available Products');
+        let productsArray = [];
+        collectionRef.get()
+            .then((products) => {
+                products.docs.map(product =>
+                    productsArray.push({
+                        id: product.id,
+                        name: product.data().name,
+                        price: product.data().price,
+                        sellingPrice: product.data().sellingPrice,
+                        quantity: product.data().quantity,
+                        tamilName: product.data().tamilName,
+                        category: product.data().category,
+                        bestseller: product.data().bestseller,
+                        description: product.data().description
+                    })
+                )
+                resolve(productsArray);
+            })
+            .catch(error => {
+                reject(error);
+            })
     });
 }
 
-export const fetchRenderDetails = () => {
+export const createProduct = (productDetails,imageFile,setProgressWidth) => {
     return new Promise((resolve, reject) => {
         const dataBase = firebase.firestore();
-        let collectionRef = dataBase.collection('Users');
-        let userDocument = collectionRef.doc(AuthenticationService.getUserId());
-        let renderRef = userDocument.collection('Render Details');
-        let renderArray = [];
-        renderRef.get()
-        .then((details) => {
-            if (details.size > 0) {
-                details.docs.map(doc =>
-                    renderArray.push({
-                        'Upload Time(ms)': doc.data().time,
-                        'User Rating': doc.data().rating,
-                    })
-                )
-                resolve(renderArray);
+        var keyWordArray = [];
+
+        var nameSpaces = productDetails[0].split(' ');
+        nameSpaces.push(productDetails[0]);
+
+        nameSpaces.map(name => {
+            keyWordArray = keyWordArray.concat(createKeyword(name));
+        })
+
+        let collectionRef = dataBase.collection('Available Products');
+        collectionRef.add({
+            name: productDetails[0],
+            keyWords: keyWordArray,
+            tamilName: productDetails[1],
+            quantity: `${productDetails[3]} ${productDetails[2]}`,
+            price: productDetails[4],
+            sellingPrice: productDetails[8],
+            category: productDetails[5],
+            bestseller: productDetails[6],
+            description: productDetails[7]
+        })
+        .then(res => {
+            setProgressWidth("50%")
+            var storageRef = firebase.storage().ref();
+            var imageRef = storageRef.child(`Images/${res.id}`)
+            imageRef.put(imageFile).then(response => {
+                setProgressWidth("75%")
+                resolve(response)
+            }).catch(err => {
+                reject(err)
+            })
+        }).catch(error => {
+            reject(error)
+        })
+    });
+}
+
+export const updateProduct = (productDetails,imageFile,setProgressWidth,productId) => {
+    return new Promise((resolve, reject) => {
+        const dataBase = firebase.firestore();
+        var keyWordArray = [];
+
+        var nameSpaces = productDetails[0].split(' ');
+        nameSpaces.push(productDetails[0]);
+
+        nameSpaces.map(name => {
+            keyWordArray = keyWordArray.concat(createKeyword(name));
+        })
+        console.log(keyWordArray)
+
+        let collectionRef = dataBase.collection('Available Products');
+        collectionRef.doc(productId).update({
+            name: productDetails[0],
+            keyWords: keyWordArray,
+            tamilName: productDetails[1],
+            quantity: `${productDetails[3]} ${productDetails[2]}`,
+            price: productDetails[4],
+            sellingPrice: productDetails[8],
+            category: productDetails[5],
+            bestseller: productDetails[6],
+            description: productDetails[7]
+        })
+        .then(res => {
+            if(imageFile) {
+                setProgressWidth("50%")
+                var storageRef = firebase.storage().ref();
+                var imageRef = storageRef.child(`Images/${productId}`)
+                imageRef.put(imageFile).then(response => {
+                    setProgressWidth("75%")
+                    resolve(response)
+                }).catch(err => {
+                    reject(err)
+                })
             } else {
-                resolve(renderArray)
+                setProgressWidth("50%")
+                resolve(res)
             }
+            
+        }).catch(error => {
+            reject(error)
+        })
+    });
+}
+
+export const fetchImage = (productId) => {
+    return new Promise((resolve, reject) => {
+        var storageRef = firebase.storage().ref();
+        var imageRef = storageRef.child('Images/'+productId)
+        imageRef.getDownloadURL().then(url => {
+            resolve(url)
+        }).catch(error => {
+            reject(error)
         })
     });
 }

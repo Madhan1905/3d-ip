@@ -82,6 +82,7 @@ const LoginScreen = (props) => {
                         Username is empty
                             </span>}
                 <TextInput
+                    login = {true}
                     placeholder='Username'
                     icon={<PersonIcon />}
                     type='text'
@@ -96,6 +97,7 @@ const LoginScreen = (props) => {
                         Password is empty
                             </span>}
                 <TextInput
+                    login = {true}
                     placeholder='Password'
                     icon={<VpnKeyIcon />}
                     type='password'
@@ -114,7 +116,7 @@ const LoginScreen = (props) => {
                         {loading && <span className="spinner-border spinner-border-sm" role="status" />}
                         {!loading && <span>Login</span>}
                     </button>
-                    <span className='custom-link'>Forgot Password?</span>
+                    {/* <span className='custom-link'>Forgot Password?</span> */}
                 </div>
             </form>
         );
@@ -138,6 +140,7 @@ const LoginScreen = (props) => {
                         Username is not a valid e-mail address
                     </span>}
                 <TextInput
+                    login = {true}
                     placeholder='Username'
                     icon={<PersonIcon />}
                     type='text'
@@ -159,6 +162,7 @@ const LoginScreen = (props) => {
                         Password should be atleast 8 characters
                             </span>}
                 <TextInput
+                    login = {true}
                     placeholder='Password'
                     icon={<VpnKeyIcon />}
                     type='password'
@@ -179,6 +183,7 @@ const LoginScreen = (props) => {
                         Passwords does not match
                     </span>}
                 <TextInput
+                    login = {true}
                     placeholder='Confirm Password'
                     icon={<VpnKeyIcon />}
                     type='password'
@@ -212,12 +217,7 @@ const LoginScreen = (props) => {
             <div className='login-container'>
                 <div className='login-container-form'>
                     <div>
-                        <img
-                            className='logo-image'
-                            src={require('../Images/logo.png')}
-                            alt="loginImage"
-                        />
-                        3D-IP Artificial Intelligence
+                        Icon Fresh - Freshness at your Doorsteps
                     </div>
                     <div className='login-header'>
                         <img

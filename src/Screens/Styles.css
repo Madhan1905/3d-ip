@@ -64,6 +64,12 @@
     align-items: center;
 }
 
+.product-submit{
+    text-align-last: center;
+    padding-top: 5%;
+    align-items: center;
+}
+
 .signup {
     display: flex;
     flex: auto;
@@ -112,9 +118,32 @@
     background-color: whitesmoke;
 }
 
+.single-product-main-body {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    height: '100vh';
+    overflow: 'auto';
+    padding-top:10vh;
+    padding-right: 5vw;
+    padding-left: 5vw;
+    background-color: whitesmoke;
+}
+
+.picture {
+    width: 15vw;
+    border-style: solid;
+    border-width: thin;
+    border-color: black;
+}
+
 .custom-link {
     cursor: pointer;
     color: turquoise;
+}
+
+.product-input {
+    text-align: left;
 }
 
 .dashboard-main {
