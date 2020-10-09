@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useEffect } from 'react';
-import { fetchImage } from '../Services/FirebaseService';
+import { fetchImage, fetchOrderDetails, updateOrderStatus } from '../Services/FirebaseService';
 
 const SingleUnit = (props) => {
 
@@ -41,6 +41,99 @@ const SingleUnit = (props) => {
                 <label>&#8377; {props.product.sellingPrice}</label><br/>
                 <label>{props.product.category}</label>
             </div>
+        </div>
+    )
+}
+
+export const OrderUnit = (props) => {
+    const [orderDetails,setOrderDetails] = useState({});
+    const [loading,setLoading] = useState(true);
+    const [disabled,setDisabled] = useState(false);
+    const [selectedRider,setSelecteRider] = useState("default");
+
+    useEffect(() => {
+        fetchOrderDetails(props.orderId,props.userId).then(result => {
+            if(result.riderAssigned){
+                setSelecteRider(result.riderAssigned);
+                setDisabled(true)
+            }
+            setOrderDetails(result)
+            setLoading(false)
+        })
+        .catch(error => console.log(error))
+    },[])
+
+    const assignOrder = () => {
+        setLoading(true);
+        updateOrderStatus(props.userId,props.orderId,selectedRider)
+        .then(() => {
+            setLoading(false);
+            setDisabled(true);
+        })
+    }
+
+    return(
+        <div>
+            <div className = "row">
+                <div className = "col-8">
+                    <div className = "row">
+                        <label className = "col-2">Order Id:</label>
+                        {`# ${props.orderId}`}
+                    </div>
+                    {!loading?
+                        <span>
+                            <div className = "row">
+                                <label className = "col-2">Order Items:</label>
+                                <ul className = "pl-0" style = {{listStylePosition: 'inside'}}>
+                                    {orderDetails.prodcuts.map(product => (
+                                        <li key = {product.id}>
+                                            {`${product.name} - ${product.count[0]}kg`}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <div className = "row">
+                                <label className = "col-2">Address:</label>
+                                {`${orderDetails.address.name},${orderDetails.address.no},${orderDetails.address.street},${orderDetails.address.city}-${orderDetails.address.pin}`}
+                            </div>
+                            <div className = "row">
+                                <label className = "col-2">Order Status:</label>
+                                {disabled ? `Assigned` : `Unassigned`}
+                            </div>
+                        </span> :
+                        <span className="spinner-border spinner-border-sm" role="status" />
+                    }
+                </div>
+                <div className = "col-4">
+                    <div className = "row">
+                        <label className = "col-4">Assign to:</label>
+                        <select 
+                            className = "col-6"
+                            disabled = {disabled}
+                            value = {selectedRider}
+                            onChange = {(event) => setSelecteRider(event.target.value)}
+                        >
+                            <option value="default">--Select--</option>
+                            {props.riders.map(rider => (
+                                <option key = {rider.id}>{rider.name}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <br/>
+                    <br/>
+                    {!disabled&&
+                    <div className = "col-11" style = {{textAlignLast:"end"}}>
+                        <button 
+                            className = {`btn ${selectedRider === "default" ? 'btn-secondary' : 'btn-primary'} btn-sm` }
+                            disabled = {selectedRider === "default" ? true : false}
+                            onClick = {() => assignOrder()}
+                        >
+                            Ok
+                        </button>
+                    </div>}
+                </div>
+            </div>
+            <hr/>
         </div>
     )
 }

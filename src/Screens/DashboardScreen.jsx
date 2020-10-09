@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import SideNavComponent from '../Components/SideNavComponent';
 import SingleUnit from '../Components/SingleUnit';
 import Edit from '@material-ui/icons/Edit';
+import MicIcon from '@material-ui/icons/Mic';
 import { createProduct, fetchAllProducts, updateProduct } from '../Services/FirebaseService';
 
 const DashboardScreen = (props) => {
@@ -15,6 +16,38 @@ const DashboardScreen = (props) => {
     const [showAddBody, setShowAddBody] = useState(null);
     const [products, setProducts] = useState([]);
     const [productId, setProductId] = useState(null);
+
+    const webkitSpeechRecognition = window.webkitSpeechRecognition;
+    var recognition = new webkitSpeechRecognition();
+        recognition.maxAlternatives = 10;
+        recognition.continuous = false;
+        recognition.interimResults = true;
+
+    const startRecording = () => {
+        console.log("started")
+        recognition.lang = 'ta-IN';
+        recognition.start();
+    }
+
+    recognition.onresult = (event) => {
+    
+        var interim_transcript = '';
+        var final_transcript =  '';
+        if (typeof(event.results) == 'undefined') {
+          recognition.onend = null;
+          recognition.stop();
+          return;
+        }
+        for (var i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            final_transcript += event.results[i][0].transcript;
+          } else {
+            interim_transcript += event.results[i][0].transcript;
+          }
+        }
+        updateValue(final_transcript, 1);
+        
+    };
 
     const updateValue = (value, index) => {
         let tempArray = inputFileds.slice();
@@ -94,16 +127,23 @@ const DashboardScreen = (props) => {
                                 value = {inputFileds[0]}
                             />
                             <label className="col-2">Tamil Name:</label>
-                            <input
-                                type="text"
-                                className={`form-control col-4 ${errorFields[1] ? "is-invalid" : ""}`}
-                                placeholder={"(Optional) Tamil Name"}
-                                onChange={(event) => {
-                                    updateValue(event.target.value, 1);
-                                    updateErrorFields(false, 1)
-                                }}
-                                value = {inputFileds[1]}
-                            />
+                            <div className="input-group col-4" style = {{padding:0}}>
+                                <input
+                                    type="text"
+                                    className={`form-control ${errorFields[1] ? "is-invalid" : ""}`}
+                                    placeholder={"(Optional) Tamil Name"}
+                                    onChange={(event) => {
+                                        updateValue(event.target.value, 1);
+                                        updateErrorFields(false, 1)
+                                    }}
+                                    value = {inputFileds[1]}
+                                />
+                                <div className="input-group-append">
+                                    <button className="btn btn-outline-secondary" type="button" onClick = {() => startRecording()}>
+                                        <MicIcon style = {{height:"20px"}}/>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                         <div className="row product-input mb-4">
                             <label className="col-2">Quantity Type:</label>
@@ -293,7 +333,7 @@ const DashboardScreen = (props) => {
                         }}
                     >
                         Show All products
-                </button>
+                    </button>
                     <button
                         className="btn btn-success w-25"
                         onClick={() => {
@@ -302,7 +342,7 @@ const DashboardScreen = (props) => {
                         }}
                     >
                         Add product
-                </button>
+                    </button>
                 </main>}
                 {!showButtons && <>
                     {showAddBody && addProductBody()}

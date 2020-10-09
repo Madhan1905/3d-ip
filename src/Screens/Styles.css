@@ -160,3 +160,12 @@
 .rating {
     cursor: pointer;
 }
+
+hr {
+    display: block;
+    height: 2px;
+    border: 0;
+    border-color: black !important;
+    margin: 1em 0;
+    padding: 0;
+}
