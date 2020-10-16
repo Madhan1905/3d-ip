@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useEffect } from 'react';
-import { fetchImage, fetchOrderDetails, updateOrderStatus } from '../Services/FirebaseService';
+import { fetchImage, fetchOrderDetails, updateOrderStatus, updateRiderDetails } from '../Services/FirebaseService';
 
 const SingleUnit = (props) => {
 
@@ -50,10 +50,11 @@ export const OrderUnit = (props) => {
     const [loading,setLoading] = useState(true);
     const [disabled,setDisabled] = useState(false);
     const [selectedRider,setSelecteRider] = useState("default");
+    const [statusLoad,setStatusLoad] = useState(false);
 
     useEffect(() => {
         fetchOrderDetails(props.orderId,props.userId).then(result => {
-            if(result.riderAssigned){
+            if(result.riderAssigned !== "default"){
                 setSelecteRider(result.riderAssigned);
                 setDisabled(true)
             }
@@ -63,13 +64,19 @@ export const OrderUnit = (props) => {
         .catch(error => console.log(error))
     },[])
 
-    const assignOrder = () => {
+    const assignOrder = (status) => {
         setLoading(true);
-        updateOrderStatus(props.userId,props.orderId,selectedRider)
+        setStatusLoad(true);
+        updateOrderStatus(props.userId,props.orderId,status,selectedRider)
         .then(() => {
-            setLoading(false);
-            setDisabled(true);
-        })
+            updateRiderDetails(props.userId,props.orderId,selectedRider)
+            .then(() => {
+                setLoading(false);
+                setStatusLoad(false);
+                props.setOrderModified(!props.orderModified)
+                setDisabled(true);
+            }).catch(error => console.log(error))
+        }).catch(error => console.log(error))
     }
 
     return(
@@ -105,7 +112,7 @@ export const OrderUnit = (props) => {
                     }
                 </div>
                 <div className = "col-4">
-                    <div className = "row">
+                    {(props.orderStatus === "Packaged" || props.orderStatus === "Assigned") && <div className = "row">
                         <label className = "col-4">Assign to:</label>
                         <select 
                             className = "col-6"
@@ -118,18 +125,40 @@ export const OrderUnit = (props) => {
                                 <option key = {rider.id}>{rider.name}</option>
                             ))}
                         </select>
-                    </div>
+                    </div>}
                     <br/>
                     <br/>
-                    {!disabled&&
+                    {!statusLoad ? <>
+                        {props.orderStatus === "Pending" &&
+                        <div className = "col-11" style = {{textAlignLast:"end"}}>
+                            <button 
+                                className = {`btn btn-primary btn-sm` }
+                                onClick = {() => assignOrder("Picked")}
+                            >
+                                Pick
+                            </button>
+                        </div>}
+                        {props.orderStatus === "Picked" &&
+                        <div className = "col-11" style = {{textAlignLast:"end"}}>
+                            <button 
+                                className = {`btn btn-primary btn-sm` }
+                                onClick = {() => assignOrder("Packaged")}
+                            >
+                                Complete
+                            </button>
+                        </div>}
+                        {props.orderStatus === "Packaged" &&
+                        <div className = "col-11" style = {{textAlignLast:"end"}}>
+                            <button 
+                                className = {`btn btn-primary btn-sm` }
+                                onClick = {() => assignOrder("Assigned")}
+                            >
+                                Ok
+                            </button>
+                        </div>}
+                    </> :
                     <div className = "col-11" style = {{textAlignLast:"end"}}>
-                        <button 
-                            className = {`btn ${selectedRider === "default" ? 'btn-secondary' : 'btn-primary'} btn-sm` }
-                            disabled = {selectedRider === "default" ? true : false}
-                            onClick = {() => assignOrder()}
-                        >
-                            Ok
-                        </button>
+                        <span className = "spinner-border spinner-border-sm"/>
                     </div>}
                 </div>
             </div>

@@ -278,7 +278,7 @@ export const getRiders = () => {
     })
 }
 
-export const updateOrderStatus = (userId,id,riderName) => {
+export const updateRiderDetails = (userId,id,riderName) => {
     return new Promise(async (resolve, reject) => {
         const dataBase = firebase.firestore();
         let collectionRef = dataBase.collection('App_Users');
@@ -290,6 +290,20 @@ export const updateOrderStatus = (userId,id,riderName) => {
             resolve(res);
         }).catch(error => {
             reject(error);
+        })
+    })
+}
+
+export const updateOrderStatus = (userId,id,status,selectedRider) => {
+    return new Promise(async (resolve, reject) => {
+        const databaseRef = firebase.database().ref(`/AppOrders/OrderForApprove/${userId}/${id}`)
+        databaseRef.once(`value`).then(() => {
+            databaseRef.update({ status:status,selectedRider:selectedRider })
+            .then(res => {
+                resolve(res);
+            }).catch(error => {
+                reject(error);
+            })
         })
     })
 }
