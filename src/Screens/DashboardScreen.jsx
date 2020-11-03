@@ -214,11 +214,13 @@ const DashboardScreen = (props) => {
                             >
                                 <option value="default">--Select--</option>
                                 <option value="Chicken">Chicken</option>
+                                <option value="Country Chicken">Country Chicken</option>
                                 <option value="Mutton">Mutton</option>
                                 <option value="Other Poultry">Other Poultry</option>
-                                <option value="Eggs">Eggs</option>
+                                <option value="Eggs & Bread">Eggs</option>
                                 <option value="Spices & Masala">Spices & Masala</option>
-                                <option value="Offers">Offers</option>
+                                <option value="Fruits">Fruits</option>
+                                <option value="Vegetables">Vegetables</option>
                             </select>
 
                             <label className="col-2">Bestsellers:</label>

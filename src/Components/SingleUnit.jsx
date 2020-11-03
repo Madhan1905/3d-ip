@@ -54,7 +54,7 @@ export const OrderUnit = (props) => {
 
     useEffect(() => {
         fetchOrderDetails(props.orderId,props.userId).then(result => {
-            if(result.riderAssigned !== "default"){
+            if(result.riderAssigned && result.riderAssigned !== "default"){
                 setSelecteRider(result.riderAssigned);
                 setDisabled(true)
             }
@@ -93,9 +93,22 @@ export const OrderUnit = (props) => {
                                 <label className = "col-2">Order Items:</label>
                                 <ul className = "pl-0" style = {{listStylePosition: 'inside'}}>
                                     {orderDetails.prodcuts.map(product => (
-                                        <li key = {product.id}>
-                                            {`${product.name} - ${product.count[0]}kg`}
-                                        </li>
+                                        product.count.map((itemCount,index) => {
+                                            let quantity = "1 Kg";
+                                            if(itemCount > 0) {
+                                                switch(index) {
+                                                    case 0 : quantity = "1 Kg"; break; 
+                                                    case 1 : quantity = "750 g"; break; 
+                                                    case 2 : quantity = "500 g"; break; 
+                                                    case 3 : quantity = "250 g"; break; 
+                                                }
+                                                return(
+                                                    <li key = {product.id}>
+                                                        {`${product.name} - ${product.count[index]} x ${quantity}`}
+                                                    </li>  
+                                                )
+                                            }
+                                        })
                                     ))}
                                 </ul>
                             </div>
