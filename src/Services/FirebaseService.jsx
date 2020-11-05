@@ -307,3 +307,27 @@ export const updateOrderStatus = (userId,id,status,selectedRider) => {
         })
     })
 }
+
+export const getOrderCategories = () => {
+    return new Promise((resolve, reject) => {
+        let databaseRef = firebase.database().ref(`/Pincodes`)
+        databaseRef.once(`value`).then(result => {
+            console.log(result.val())
+            resolve(result.val());
+        }).catch(error => reject(error))
+    })
+}
+
+export const updateOrderCategories = (value) => {
+    return new Promise((resolve, reject) => {
+        let databaseRef = firebase.database().ref(`/Pincodes`)
+        databaseRef.once(`value`).then(result => {
+            databaseRef.update(value)
+            .then(res => {
+                resolve(res);
+            }).catch(error => {
+                reject(error);
+            })
+        }).catch(error => reject(error))
+    })
+}

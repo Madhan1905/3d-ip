@@ -8,6 +8,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import DashboardIcon from '@material-ui/icons/Dashboard';
+import SettingsIcon from '@material-ui/icons/Settings';
 import PeopleIcon from '@material-ui/icons/People';
 import TimelineIcon from '@material-ui/icons/Timeline';
 import ListIcon from '@material-ui/icons/List';
@@ -111,6 +112,15 @@ const SideNavComponent = (props) => {
                 <ListItemText primary="Orders" />
               </ListItem>
             </Link>
+            {(AuthenticationService.getUserId() === "arun@if.com" || AuthenticationService.getUserId() === "mg_vel@if.com") &&
+            <Link to="/config" style={{ textDecoration: 'none', color: 'black' }}>
+              <ListItem button>
+                <ListItemIcon>
+                  <SettingsIcon />
+                </ListItemIcon>
+                <ListItemText primary="App Configuration" />
+              </ListItem>
+            </Link>}
           </div>
         </List>
       </Drawer>
