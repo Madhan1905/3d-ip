@@ -294,11 +294,11 @@ export const updateRiderDetails = (userId,id,riderName) => {
     })
 }
 
-export const updateOrderStatus = (userId,id,status,selectedRider) => {
+export const updateOrderStatus = (userId,id,status,selectedRider,selectionArray) => {
     return new Promise(async (resolve, reject) => {
         const databaseRef = firebase.database().ref(`/AppOrders/OrderForApprove/${userId}/${id}`)
         databaseRef.once(`value`).then(() => {
-            databaseRef.update({ status:status,selectedRider:selectedRider })
+            databaseRef.update({ status:status,selectedRider:selectedRider,selectionArray:selectionArray})
             .then(res => {
                 resolve(res);
             }).catch(error => {

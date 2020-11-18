@@ -51,12 +51,20 @@ export const OrderUnit = (props) => {
     const [disabled,setDisabled] = useState(false);
     const [selectedRider,setSelecteRider] = useState("default");
     const [statusLoad,setStatusLoad] = useState(false);
+    const [selectionArray,setSelectionArray] = useState([]);
 
     useEffect(() => {
         fetchOrderDetails(props.orderId,props.userId).then(result => {
             if(result.riderAssigned && result.riderAssigned !== "default"){
                 setSelecteRider(result.riderAssigned);
                 setDisabled(true)
+            }
+            if(props.selectionArray === undefined){
+                let tempArray = [];
+                result.prodcuts.map(() => tempArray.push(false));
+                setSelectionArray(tempArray);
+            } else {
+                setSelectionArray(props.selectionArray);
             }
             setOrderDetails(result)
             setLoading(false)
@@ -67,7 +75,7 @@ export const OrderUnit = (props) => {
     const assignOrder = (status) => {
         setLoading(true);
         setStatusLoad(true);
-        updateOrderStatus(props.userId,props.orderId,status,selectedRider)
+        updateOrderStatus(props.userId,props.orderId,status,selectedRider,selectionArray)
         .then(() => {
             updateRiderDetails(props.userId,props.orderId,selectedRider)
             .then(() => {
@@ -87,29 +95,57 @@ export const OrderUnit = (props) => {
                         <label className = "col-2">Order Id:</label>
                         {`# ${props.orderId}`}
                     </div>
+                    <div className = "row">
+                        <label className = "col-2">Order Date:</label>
+                        {`${orderDetails.orderedDate}`}
+                    </div>
+                    <div className = "row">
+                        <label className = "col-2">Order Time:</label>
+                        {`${orderDetails.orderedTime}`}
+                    </div>
+                    <div className = "row">
+                        <label className = "col-2">Order Slot:</label>
+                        {`${orderDetails.slot}`}
+                    </div>
                     {!loading?
                         <span>
                             <div className = "row">
                                 <label className = "col-2">Order Items:</label>
-                                <ul className = "pl-0" style = {{listStylePosition: 'inside'}}>
-                                    {orderDetails.prodcuts.map(product => (
-                                        product.count.map((itemCount,index) => {
-                                            let quantity = "1 Kg";
-                                            if(itemCount > 0) {
-                                                switch(index) {
-                                                    case 0 : quantity = "1 Kg"; break; 
-                                                    case 1 : quantity = "750 g"; break; 
-                                                    case 2 : quantity = "500 g"; break; 
-                                                    case 3 : quantity = "250 g"; break; 
+                                <ul className = "pl-0" style = {{listStylePosition: 'inside',listStyle: 'none'}}>
+                                    {orderDetails.prodcuts.map((product,parentIndex) => {
+                                        return(
+                                            product.count.map((itemCount,index) => {
+                                                let quantity = "1 Kg";
+                                                if(itemCount > 0) {
+                                                    switch(index) {
+                                                        case 0 : quantity = "1 Kg"; break; 
+                                                        case 1 : quantity = "750 g"; break; 
+                                                        case 2 : quantity = "500 g"; break; 
+                                                        case 3 : quantity = "250 g"; break; 
+                                                    }
+                                                    return(
+                                                        <li key = {product.id}>
+                                                            <input 
+                                                                readOnly = {props.orderStatus === "Picked" ? false : true}
+                                                                type="checkbox" 
+                                                                className="mr-2" 
+                                                                checked = {selectionArray[parentIndex]}
+                                                                style={{pointerEvents:props.orderStatus === "Picked" ? "auto" : "none"}}
+                                                                onClick = {() => {
+                                                                    if(props.orderStatus === "Picked"){
+                                                                        let tempArray = selectionArray.slice();
+                                                                        tempArray[parentIndex] = !tempArray[parentIndex];
+                                                                        setSelectionArray(tempArray);
+                                                                    }
+                                                                }}
+                                                            />
+                                                            {`${product.name} - ${product.count[index]} x ${quantity}`}
+                                                        </li>  
+                                                    )
                                                 }
-                                                return(
-                                                    <li key = {product.id}>
-                                                        {`${product.name} - ${product.count[index]} x ${quantity}`}
-                                                    </li>  
-                                                )
-                                            }
-                                        })
-                                    ))}
+                                            })
+                                        )
+                                    })}
                                 </ul>
                             </div>
                             <div className = "row">
@@ -155,7 +191,7 @@ export const OrderUnit = (props) => {
                         <div className = "col-11" style = {{textAlignLast:"end"}}>
                             <button 
                                 className = {`btn btn-primary btn-sm` }
-                                onClick = {() => assignOrder("Packaged")}
+                                onClick = {() => assignOrder(selectionArray.every(e => e === true) ? "Packaged": "Pending")}
                             >
                                 Complete
                             </button>
@@ -165,6 +201,7 @@ export const OrderUnit = (props) => {
                             <button 
                                 className = {`btn btn-primary btn-sm` }
                                 onClick = {() => assignOrder("Assigned")}
+                                disabled = {selectedRider === "default"}
                             >
                                 Ok
                             </button>

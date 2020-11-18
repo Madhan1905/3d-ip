@@ -78,6 +78,7 @@ const OrdersScreen = () => {
                                         userId = {key}
                                         orderId = {order}
                                         key = {order}
+                                        selectionArray = {orders[key][order].selectionArray}
                                         orderStatus = {selectedTab}
                                         orderModified = {orderModified}
                                         setOrderModified = {setOrderModified}
