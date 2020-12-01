@@ -159,6 +159,7 @@ const DashboardScreen = (props) => {
                                 <option value="default">--Select--</option>
                                 <option value="gram">Gram</option>
                                 <option value="kg">KiloGram</option>
+                                <option value="pc">Piece</option>
                             </select>
                             <label className="col-2">Quantity:</label>
                             <input

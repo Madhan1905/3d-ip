@@ -331,3 +331,46 @@ export const updateOrderCategories = (value) => {
         }).catch(error => reject(error))
     })
 }
+
+export const updatePromoCodes = (promoObject,isSubmit) => {
+    return new Promise((resolve, reject) => {
+        const dataBase = firebase.firestore();
+        let collectionRef = dataBase.collection('App_Configuration');
+
+        let promoRef = collectionRef.doc('Promocodes').collection("Promocodes");
+        if(isSubmit){
+            promoRef.add(promoObject)
+            .then(res => {
+                resolve(res);
+            }).catch(error => {
+                reject(error);
+            })
+        }else {
+            promoRef.doc(promoObject).delete()
+            .then(res => {
+                resolve(res);
+            }).catch(error => {
+                reject(error);
+            })
+        }
+    })
+}
+
+export const fetchPromoCodes = (promoObject) => {
+    return new Promise((resolve, reject) => {
+        const dataBase = firebase.firestore();
+        let collectionRef = dataBase.collection('App_Configuration');
+
+        let promoRef = collectionRef.doc('Promocodes').collection("Promocodes");
+        let codesArray = [];
+        promoRef.get()
+        .then(codes => {
+            codes.docs.map(code => {
+                codesArray.push({id:code.id,...code.data()})
+            })
+            resolve(codesArray);
+        }).catch(error => {
+            reject(error);
+        })
+    })
+}
