@@ -31,7 +31,9 @@ const SingleUnit = (props) => {
                 <label>Quantity:</label><br/>
                 <label>Price:</label><br/>
                 <label>Selling Price:</label><br/>
-                <label>Category:</label>
+                <label>Category:</label><br/>
+                <label>Sub Category:</label><br/>
+                <label>Stock:</label>
             </div>
             <div className = "ml-5">
                 <label>{props.product.name}</label><br/>
@@ -39,7 +41,9 @@ const SingleUnit = (props) => {
                 <label>{props.product.quantity}</label><br/>
                 <label>&#8377; {props.product.price}</label><br/>
                 <label>&#8377; {props.product.sellingPrice}</label><br/>
-                <label>{props.product.category}</label>
+                <label>{props.product.category}</label><br/>
+                <label>{props.product.subCategory}</label><br/>
+                <label>{props.product.stock}</label>
             </div>
         </div>
     )

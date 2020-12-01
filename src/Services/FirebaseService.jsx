@@ -104,7 +104,9 @@ export const fetchAllProducts = () => {
                         tamilName: product.data().tamilName,
                         category: product.data().category,
                         bestseller: product.data().bestseller,
-                        description: product.data().description
+                        description: product.data().description,
+                        subCategory: product.data().subCategory ? product.data().subCategory : "",
+                        stock: product.data().stock ? product.data().stock : "",
                     })
                 )
                 resolve(productsArray);
@@ -145,10 +147,12 @@ export const createProduct = (productDetails,imageFile,setProgressWidth) => {
             tamilName: productDetails[1],
             quantity: `${productDetails[3]} ${productDetails[2]}`,
             price: productDetails[4],
-            sellingPrice: productDetails[8],
             category: productDetails[5],
             bestseller: productDetails[6],
-            description: productDetails[7]
+            description: productDetails[7],
+            sellingPrice: productDetails[8],
+            subCategory: productDetails[9],
+            stock: productDetails[10],
         })
         .then(res => {
             setProgressWidth("50%")
@@ -198,10 +202,12 @@ export const updateProduct = (productDetails,imageFile,setProgressWidth,productI
             sellingPrice: productDetails[8],
             category: productDetails[5],
             bestseller: productDetails[6],
-            description: productDetails[7]
+            description: productDetails[7],
+            subCategory: productDetails[9],
+            stock: productDetails[10],
         })
         .then(res => {
-            if(imageFile) {
+            if(imageFile && imageFile !== "~~edit") {
                 setProgressWidth("50%")
                 var storageRef = firebase.storage().ref();
                 var imageRef = storageRef.child(`Images/${productId}`)

@@ -3,11 +3,11 @@ import SideNavComponent from '../Components/SideNavComponent';
 import SingleUnit from '../Components/SingleUnit';
 import Edit from '@material-ui/icons/Edit';
 import MicIcon from '@material-ui/icons/Mic';
-import { createProduct, fetchAllProducts, updateProduct } from '../Services/FirebaseService';
+import { createProduct, fetchAllProducts, getSubCategories, updateProduct } from '../Services/FirebaseService';
 
 const DashboardScreen = (props) => {
-    const [inputFileds, setInputFields] = useState(["", "", "", "", "", "", "no", "", ""]);
-    const [errorFields, setErrorFields] = useState([false, false, false, false, false, false, false, false, false]);
+    const [inputFileds, setInputFields] = useState(["", "", "", "", "", "", "no", "", "","","yes"]);
+    const [errorFields, setErrorFields] = useState([false, false, false, false, false, false, false, false, false,false]);
     const [picture, setPicture] = useState(null);
     const [pictureName, setPictureName] = useState("Upload Picture");
     const [loading, setLoading] = useState(false);
@@ -16,6 +16,7 @@ const DashboardScreen = (props) => {
     const [showAddBody, setShowAddBody] = useState(null);
     const [products, setProducts] = useState([]);
     const [productId, setProductId] = useState(null);
+    const [subcategories,setSubcategories] = useState([]);
 
     const webkitSpeechRecognition = window.webkitSpeechRecognition;
     var recognition = new webkitSpeechRecognition();
@@ -63,19 +64,29 @@ const DashboardScreen = (props) => {
 
     const updateAllErrorFields = () => {
         let tempArray = [inputFileds[0].length < 1, false, inputFileds[2].length < 1, 
-            inputFileds[3].length < 1, inputFileds[4].length < 1, picture == null, inputFileds[5].length < 1, false, inputFileds[8].length < 1 ];
+            inputFileds[3].length < 1, inputFileds[4].length < 1, picture == null, 
+            inputFileds[5].length < 1, false, inputFileds[8].length < 1, 
+            (inputFileds[9].length < 1 || !subcategories.includes(inputFileds[9])) ];
         setErrorFields(tempArray);
+    }
+
+    const updateSubcategories = (sub) => {
+        getSubCategories().then(result => {
+            setSubcategories(result.Categories[sub]);
+            setLoading(false);
+        })
+        .catch(error => console.log(error))
     }
 
     const submit = () => {
         setProgressWidth("25%")
         if (inputFileds[0].length > 0 && inputFileds[2].length > 0 && inputFileds[3].length > 0 && inputFileds[4].length > 0 && 
-            inputFileds[5].length > 0 && (picture != null || productId)) {
+            inputFileds[5].length > 0 && inputFileds[9].length > 0 && subcategories.includes(inputFileds[9]) && (picture != null || productId)) {
             setLoading(true)
             if(productId) {
                 updateProduct(inputFileds, picture, setProgressWidth, productId)
                 .then(() => {
-                    setInputFields(["", "", "", "", "", "", "no", "",""]);
+                    setInputFields(["", "", "", "", "", "", "no", "","","","yes"]);
                     setProductId(null);
                     setPicture(null);
                     setPictureName("Upload Picture");
@@ -88,7 +99,7 @@ const DashboardScreen = (props) => {
             } else {
                 createProduct(inputFileds, picture, setProgressWidth)
                 .then(() => {
-                    setInputFields(["", "", "", "", "", "", "no", "",""]);
+                    setInputFields(["", "", "", "", "", "", "no", "","","","yes"]);
                     setPicture(null);
                     setPictureName("Upload Picture");
                     setLoading(false);
@@ -208,20 +219,20 @@ const DashboardScreen = (props) => {
                                 className="col-4"
                                 onChange={(event) => {
                                     updateValue(event.target.value, 5);
-                                    updateErrorFields(false, 6)
+                                    updateErrorFields(false, 6);
+                                    updateSubcategories(event.target.value)
                                 }}
                                 style={{ borderColor: errorFields[6] ? "red" : "grey" }}
                                 value = {inputFileds[5]}
                             >
                                 <option value="default">--Select--</option>
-                                <option value="Chicken">Chicken</option>
-                                <option value="Country Chicken">Country Chicken</option>
-                                <option value="Mutton">Mutton</option>
-                                <option value="Other Poultry">Other Poultry</option>
-                                <option value="Eggs & Bread">Eggs & Bread</option>
-                                <option value="Spices & Masala">Spices & Masala</option>
                                 <option value="Fruits">Fruits</option>
                                 <option value="Vegetables">Vegetables</option>
+                                <option value="Meat">Meat</option>
+                                <option value="Breads & Egg">Breads & Egg</option>
+                                <option value="Bakery">Bakery</option>
+                                <option value="Spices & Masala">Spices & Masala</option>
+                                <option value="Juices">Juices</option>
                             </select>
 
                             <label className="col-2">Bestsellers:</label>
@@ -231,6 +242,36 @@ const DashboardScreen = (props) => {
                                     updateValue(event.target.value, 6);
                                 }}
                                 value = {inputFileds[6]}
+                            >
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+
+                        <div className="row product-input mb-4">
+                            <label className="col-2">Sub Category:</label>
+                            <select
+                                className="col-4"
+                                onChange={(event) => {
+                                    updateValue(event.target.value, 9);
+                                    updateErrorFields(false, 9);
+                                }}
+                                style={{ borderColor: errorFields[9] ? "red" : "grey" }}
+                                value = {inputFileds[9]}
+                            >
+                                <option value="default">--Select--</option>
+                                {subcategories.map(subCat => (
+                                    <option value={subCat} key={subCat}>{subCat}</option>
+                                ))}
+                            </select>
+
+                            <label className="col-2">Stock Available:</label>
+                            <select
+                                className="col-4"
+                                onChange={(event) => {
+                                    updateValue(event.target.value, 10);
+                                }}
+                                value = {inputFileds[10]}
                             >
                                 <option value="yes">Yes</option>
                                 <option value="no">No</option>
@@ -299,8 +340,12 @@ const DashboardScreen = (props) => {
                                     onClick = {() => {
                                         setInputFields([product.name, product.tamilName, 
                                             product.quantity.split(" ")[1], product.quantity.split(" ")[0], 
-                                            product.price, product.category,product.bestseller,product.description,product.sellingPrice]);
+                                            product.price, product.category,product.bestseller,product.description,product.sellingPrice,
+                                            product.subCategory,product.stock]);
                                         setProductId(product.id);
+                                        setPicture('~~edit')
+                                        setPictureName(`${product.name}.jpg`);
+                                        updateSubcategories(product.category)
                                         setShowAddBody(true);
                                     }}
                                 >

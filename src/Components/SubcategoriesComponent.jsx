@@ -179,6 +179,18 @@ const Subcategories = () => {
                         {getSublist('Juices')}
                     </ul>
                 </li>
+                <li className = "category-title">
+                    <div className = "row">
+                        <span className = "col-2">Spices & Masala</span>
+                        <AddCircleIcon 
+                            style = {{color:"green"}}
+                            onClick = {() => additem(categories['Spices & Masala'],'Spices & Masala')}
+                        />
+                    </div>
+                    <ul>
+                        {getSublist('Spices & Masala')}
+                    </ul>
+                </li>
             </ul> : <span className = "spinner-border spinner-border-lg"/>}
         </>
     )
