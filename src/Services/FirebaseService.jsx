@@ -312,7 +312,6 @@ export const getOrderCategories = () => {
     return new Promise((resolve, reject) => {
         let databaseRef = firebase.database().ref(`/Pincodes`)
         databaseRef.once(`value`).then(result => {
-            console.log(result.val())
             resolve(result.val());
         }).catch(error => reject(error))
     })
@@ -372,5 +371,29 @@ export const fetchPromoCodes = (promoObject) => {
         }).catch(error => {
             reject(error);
         })
+    })
+}
+
+export const getSubCategories = () => {
+    return new Promise((resolve, reject) => {
+        const dataBase = firebase.firestore();
+        let collectionRef = dataBase.collection('App_Configuration');
+
+        let categoriesRef = collectionRef.doc('SubCategories');
+        categoriesRef.get().then(categories => {
+            resolve(categories.data())
+        }).catch(error => reject(error))
+    })
+}
+
+export const setSubCategories = (categories) => {
+    return new Promise((resolve, reject) => {
+        const dataBase = firebase.firestore();
+        let collectionRef = dataBase.collection('App_Configuration');
+
+        let categoriesRef = collectionRef.doc('SubCategories');
+        categoriesRef.update({Categories:categories}).then(() => {
+            resolve("Success")
+        }).catch(error => reject(error))
     })
 }
