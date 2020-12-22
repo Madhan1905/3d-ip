@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import FrontPictures from '../Components/FrontPicturesComponent';
 import Pincodes from '../Components/PincodesComponent';
 import Promocodes from '../Components/PromocodesComponent';
 import SideNavComponent from '../Components/SideNavComponent';
@@ -61,6 +62,14 @@ const ConfigScreen = () => {
                             Sub Categories
                         </span>
                     </li>
+                    <li className="nav-item">
+                        <span 
+                            className={`nav-link ${selectedTab === "slides" && 'active'}`}
+                            onClick = {() => setSelectedTab("slides")}
+                        >
+                            Slide Pictures
+                        </span>
+                    </li>
                 </ul>
                 {selectedTab === "pincodes" &&
                     <Pincodes
@@ -83,6 +92,12 @@ const ConfigScreen = () => {
                 {selectedTab === "subcat" &&
                     <Subcategories
                         loading = {loading}
+                    />
+                }
+                {selectedTab === "slides" &&
+                    <FrontPictures
+                        loading = {loading}
+                        setLoading = {setLoading}
                     />
                 }
             </div>

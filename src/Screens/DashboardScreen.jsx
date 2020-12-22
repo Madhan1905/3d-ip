@@ -72,7 +72,9 @@ const DashboardScreen = (props) => {
 
     const updateSubcategories = (sub) => {
         getSubCategories().then(result => {
-            setSubcategories(result.Categories[sub]);
+            if(result.Categories[sub]){
+                setSubcategories(result.Categories[sub]);
+            }
             setLoading(false);
         })
         .catch(error => console.log(error))

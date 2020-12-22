@@ -106,7 +106,7 @@ export const fetchAllProducts = () => {
                         bestseller: product.data().bestseller,
                         description: product.data().description,
                         subCategory: product.data().subCategory ? product.data().subCategory : "",
-                        stock: product.data().stock ? product.data().stock : "",
+                        stock: product.data().stock ? product.data().stock : "yes",
                     })
                 )
                 resolve(productsArray);
@@ -270,16 +270,32 @@ export const getRiders = () => {
     return new Promise(async (resolve, reject) => {
         var rider_Details = [];
         const dataBase = firebase.firestore();
-        let collectionRef = dataBase.collection('App_Users');
+        let collectionRef = dataBase.collection('Riders');
         collectionRef.where('Rider', '==', true).get()
         .then(riders => {
             riders.docs.map(rider => {
                 rider_Details.push({
                     id: rider.id,
-                    name: rider.data().name
+                    name: rider.data().name,
+                    phone: rider.data().phone
                 })
             })
             resolve(rider_Details)
+        }).catch(error => reject(error))
+    })
+}
+
+export const addRider = (user,details) => {
+    return new Promise(async (resolve, reject) => {
+        const dataBase = firebase.firestore();
+        let collectionRef = dataBase.collection('Riders');
+        collectionRef.doc(user.uid).set({ name: details[0], phone:  details[1],Rider: true})
+        .then(() => {
+            user.updateProfile({
+                displayName: details[0],
+            }).then(() => {
+                resolve("Done")
+            })
         }).catch(error => reject(error))
     })
 }
@@ -402,4 +418,45 @@ export const setSubCategories = (categories) => {
             resolve("Success")
         }).catch(error => reject(error))
     })
+}
+
+export const fetchOfferImages = () => {
+    return new Promise((resolve, reject) => {
+        var imageRef = firebase.storage().ref(`Offers`);
+        imageRef.listAll().then(async(result) => {
+            await Promise.all(
+                result.items.map(async item => {
+                    let name = item.name
+                    let url = await imageRef.child(name).getDownloadURL();
+                    return {url:url,name:name}
+                })
+            ).then(result => {
+                resolve(result)
+            })
+        }).catch(error => {
+            reject(error)
+        })
+    });
+}
+
+export const createOfferImages = (imageFile) => {
+    return new Promise((resolve, reject) => {
+        var imageRef = firebase.storage().ref(`Offers/${imageFile.name}`);
+        imageRef.put(imageFile).then(response => {
+            resolve(response)
+        }).catch(err => {
+            reject(err)
+        })
+    });
+}
+
+export const deleteOfferImages = (fileName) => {
+    return new Promise((resolve, reject) => {
+        var imageRef = firebase.storage().ref(`Offers/${fileName}`);
+        imageRef.delete().then(response => {
+            resolve(response)
+        }).catch(err => {
+            reject(err)
+        })
+    });
 }

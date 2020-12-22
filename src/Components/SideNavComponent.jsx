@@ -12,6 +12,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import PeopleIcon from '@material-ui/icons/People';
 import TimelineIcon from '@material-ui/icons/Timeline';
 import ListIcon from '@material-ui/icons/List';
+import DirectionsBikeIcon from '@material-ui/icons/DirectionsBike';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -102,6 +103,14 @@ const SideNavComponent = (props) => {
                   <TimelineIcon />
                 </ListItemIcon>
                 <ListItemText primary="Analytics" />
+              </ListItem>
+            </Link>
+            <Link to="/riders" style={{ textDecoration: 'none', color: 'black' }}>
+              <ListItem button>
+                <ListItemIcon>
+                  <DirectionsBikeIcon />
+                </ListItemIcon>
+                <ListItemText primary="Riders" />
               </ListItem>
             </Link>
             <Link to="/orders" style={{ textDecoration: 'none', color: 'black' }}>
