@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Delivery from '../Components/DeliveryComponent';
 import FrontPictures from '../Components/FrontPicturesComponent';
 import Pincodes from '../Components/PincodesComponent';
 import Promocodes from '../Components/PromocodesComponent';
@@ -10,7 +11,7 @@ const ConfigScreen = () => {
 
     const [categories,setCategories] = useState({});
     const [loading,setLoading] = useState(false);
-    const [selectedTab,setSelectedTab] = useState("pincodes");
+    const [selectedTab,setSelectedTab] = useState("Delivery");
     const [promoCodes,setPromoCodes] = useState([]);
     const [submitting,setSubmitting] = useState(false);
     const [refresh,setRefresh] = useState(false);
@@ -70,6 +71,14 @@ const ConfigScreen = () => {
                             Slide Pictures
                         </span>
                     </li>
+                    <li className="nav-item">
+                        <span 
+                            className={`nav-link ${selectedTab === "Delivery" && 'active'}`}
+                            onClick = {() => setSelectedTab("Delivery")}
+                        >
+                            Delivery
+                        </span>
+                    </li>
                 </ul>
                 {selectedTab === "pincodes" &&
                     <Pincodes
@@ -99,6 +108,9 @@ const ConfigScreen = () => {
                         loading = {loading}
                         setLoading = {setLoading}
                     />
+                }
+                {selectedTab === "Delivery" &&
+                    <Delivery/>
                 }
             </div>
         </div>

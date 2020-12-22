@@ -339,7 +339,7 @@ export const getOrderCategories = () => {
     })
 }
 
-export const fetchPincodeEnablement = (promoObject) => {
+export const fetchPincodeEnablement = () => {
     return new Promise((resolve, reject) => {
         const dataBase = firebase.firestore();
         let collectionRef = dataBase.collection('App_Configuration');
@@ -348,6 +348,36 @@ export const fetchPincodeEnablement = (promoObject) => {
         promoRef.get()
         .then(code => {
             resolve(code.data());
+        }).catch(error => {
+            reject(error);
+        })
+    })
+}
+
+export const fetchDeliveryFee = () => {
+    return new Promise((resolve, reject) => {
+        const dataBase = firebase.firestore();
+        let collectionRef = dataBase.collection('App_Configuration');
+
+        let promoRef = collectionRef.doc('Delivery');
+        promoRef.get()
+        .then(code => {
+            resolve(code.data());
+        }).catch(error => {
+            reject(error);
+        })
+    })
+}
+
+export const updateDeliveryFee = (value) => {
+    return new Promise((resolve, reject) => {
+        const dataBase = firebase.firestore();
+        let collectionRef = dataBase.collection('App_Configuration');
+
+        let promoRef = collectionRef.doc('Delivery');
+        promoRef.update({Fee:value})
+        .then(code => {
+            resolve("Success");
         }).catch(error => {
             reject(error);
         })
