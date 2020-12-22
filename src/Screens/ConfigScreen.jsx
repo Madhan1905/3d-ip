@@ -11,7 +11,7 @@ const ConfigScreen = () => {
 
     const [categories,setCategories] = useState({});
     const [loading,setLoading] = useState(false);
-    const [selectedTab,setSelectedTab] = useState("Delivery");
+    const [selectedTab,setSelectedTab] = useState("pincodes");
     const [promoCodes,setPromoCodes] = useState([]);
     const [submitting,setSubmitting] = useState(false);
     const [refresh,setRefresh] = useState(false);

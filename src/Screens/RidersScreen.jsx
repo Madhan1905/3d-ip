@@ -13,21 +13,23 @@ const RidersScreen = () => {
     const [adding,setAdding] = useState(false);
 
     useEffect(() => {
-        getRiders().then(rider_details => {
-            setRiders(rider_details);
-            setLoading(false);
-        });
-        window.appVerifier = new firebase.auth.RecaptchaVerifier(
-            "recaptcha",
-            {
-              size: "invisible",
-              callback: () => {
-                console.log("Callback invoked")
-                sendOtp();
-              }
-            }
-          );
-    },[])
+        if(!adding){
+            getRiders().then(rider_details => {
+                setRiders(rider_details);
+                setLoading(false);
+            });
+        }
+        // window.appVerifier = new firebase.auth.RecaptchaVerifier(
+        //     "recaptcha",
+        //     {
+        //       size: "invisible",
+        //       callback: () => {
+        //         console.log("Callback invoked")
+        //         sendOtp();
+        //       }
+        //     }
+        //   );
+    },[adding])
 
     const updateRiderDetails = (value,index) => {
         let tempArray = riderInfo.slice();
@@ -35,41 +37,41 @@ const RidersScreen = () => {
         setRiderInfo(tempArray);
     }
 
-    const sendOtp = () => {
-        setLoading(true);
-        const appVerifier = window.appVerifier;
-        firebase
-        .auth()
-        .signInWithPhoneNumber(`+91${riderInfo[1]}`, appVerifier)
-        .then((confirmationResult) => {
-            setLoading(false);
-            console.log("Success");
-            setOtpSent(true);
-            window.confirmationResult = confirmationResult;
-        })
-        .catch((error) => {
-            console.log("Error:" + error.code);
-        });
-    }
+    // const sendOtp = () => {
+    //     setLoading(true);
+    //     const appVerifier = window.appVerifier;
+    //     firebase
+    //     .auth()
+    //     .signInWithPhoneNumber(`+91${riderInfo[1]}`, appVerifier)
+    //     .then((confirmationResult) => {
+    //         setLoading(false);
+    //         console.log("Success");
+    //         setOtpSent(true);
+    //         window.confirmationResult = confirmationResult;
+    //     })
+    //     .catch((error) => {
+    //         console.log("Error:" + error.code);
+    //     });
+    // }
 
-    const submitPhoneNumberAuthCode = () => {
-        var code = otp;
-        window.confirmationResult
-            .confirm(code)
-            .then((result) => {
-                var user = result.user;
-                console.log(user.uid)
-                addRider(user,riderInfo)
-                .then(() => setAdding(false))
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    }
+    // const submitPhoneNumberAuthCode = () => {
+    //     var code = otp;
+    //     window.confirmationResult
+    //         .confirm(code)
+    //         .then((result) => {
+    //             var user = result.user;
+    //             console.log(user.uid)
+    //             addRider(user,riderInfo)
+    //             .then(() => setAdding(false))
+    //         })
+    //         .catch((error) => {
+    //             console.log(error);
+    //         });
+    // }
 
     return(
         <div style={{ display: "flex" }}>
-            <SideNavComponent title='Orders' />
+            <SideNavComponent title='Riders' />
             <div className="single-product-main-body">
                 <div id="recaptcha"/>
                 <>
@@ -111,7 +113,7 @@ const RidersScreen = () => {
                                 }}
                             />
                         </div>
-                        <div className = "row mb-3">
+                        {/*<div className = "row mb-3">
                             <span className = "col-2">OTP</span>
                             <input 
                                 className = "col-3" 
@@ -131,7 +133,14 @@ const RidersScreen = () => {
                             className = "btn btn-primary"
                         >
                             {!otpSent ? 'Send OTP' : 'Submit'}
-                        </button> : <span className = "spinner-border spinner-border-sm"/>}
+                        </button> : <span className = "spinner-border spinner-border-sm"/>} */}
+                        <button
+                            disabled = {loading}
+                            onClick = {() => {addRider(riderInfo).then(() => setAdding(false))}}
+                            className = "btn btn-primary"
+                        >
+                            Submit
+                        </button>
                     </>}
                 </>
             </div>

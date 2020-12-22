@@ -285,17 +285,18 @@ export const getRiders = () => {
     })
 }
 
-export const addRider = (user,details) => {
+export const addRider = (details) => {
     return new Promise(async (resolve, reject) => {
         const dataBase = firebase.firestore();
         let collectionRef = dataBase.collection('Riders');
-        collectionRef.doc(user.uid).set({ name: details[0], phone:  details[1],Rider: true})
+        collectionRef.doc(`+91${details[1]}`).set({ name: details[0], phone:  details[1],Rider: true})
         .then(() => {
-            user.updateProfile({
-                displayName: details[0],
-            }).then(() => {
-                resolve("Done")
-            })
+            resolve("Done")
+            // user.updateProfile({
+            //     displayName: details[0],
+            // }).then(() => {
+            //     resolve("Done")
+            // })
         }).catch(error => reject(error))
     })
 }
