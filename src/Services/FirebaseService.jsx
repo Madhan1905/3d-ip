@@ -339,13 +339,34 @@ export const getOrderCategories = () => {
     })
 }
 
-export const updateOrderCategories = (value) => {
+export const fetchPincodeEnablement = (promoObject) => {
+    return new Promise((resolve, reject) => {
+        const dataBase = firebase.firestore();
+        let collectionRef = dataBase.collection('App_Configuration');
+
+        let promoRef = collectionRef.doc('Pincodes');
+        promoRef.get()
+        .then(code => {
+            resolve(code.data());
+        }).catch(error => {
+            reject(error);
+        })
+    })
+}
+
+export const updateOrderCategories = (value,enabled) => {
     return new Promise((resolve, reject) => {
         let databaseRef = firebase.database().ref(`/Pincodes`)
         databaseRef.once(`value`).then(result => {
             databaseRef.update(value)
             .then(res => {
-                resolve(res);
+                const dataBase = firebase.firestore();
+                let collectionRef = dataBase.collection('App_Configuration');
+
+                let categoriesRef = collectionRef.doc('Pincodes');
+                categoriesRef.update({Enabled:enabled}).then(() => {
+                    resolve("Success")
+        }).catch(error => reject(error))
             }).catch(error => {
                 reject(error);
             })
