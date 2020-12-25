@@ -15,6 +15,7 @@ const DashboardScreen = (props) => {
     const [showButtons, setShowButtons] = useState(true);
     const [showAddBody, setShowAddBody] = useState(null);
     const [products, setProducts] = useState([]);
+    const [filteredProducts,setFilteredProducts] = useState([]);
     const [productId, setProductId] = useState(null);
     const [subcategories,setSubcategories] = useState([]);
 
@@ -333,8 +334,19 @@ const DashboardScreen = (props) => {
     const allProductsBody = () => {
         return (
             <main className='single-product-main-body'>
+                <div className = "row">
+                    <span className = "col-1">Search</span>
+                    <input 
+                        type = "text" 
+                        onChange = {(event) => {
+                            let tempArray = products.slice();
+                            tempArray =  tempArray.filter(product => product.name.toUpperCase().startsWith(event.target.value.toUpperCase()))
+                            setFilteredProducts(tempArray);
+                        }}
+                    />
+                </div>
                 {
-                    products.map((product,index) => {
+                    filteredProducts.map((product,index) => {
                         return (
                             <div key = {index}>
                                 <div 
@@ -379,6 +391,7 @@ const DashboardScreen = (props) => {
                                 setProgressWidth("75%")
                                 setLoading(false);
                                 setProducts(response)
+                                setFilteredProducts(response);
                             })
                         }}
                     >

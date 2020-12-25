@@ -97,14 +97,6 @@ const SideNavComponent = (props) => {
                   <ListItemText primary="Users" />
                 </ListItem>
               </Link>}
-            <Link to="/analytics" style={{ textDecoration: 'none', color: 'black' }}>
-              <ListItem button>
-                <ListItemIcon>
-                  <TimelineIcon />
-                </ListItemIcon>
-                <ListItemText primary="Analytics" />
-              </ListItem>
-            </Link>
             <Link to="/riders" style={{ textDecoration: 'none', color: 'black' }}>
               <ListItem button>
                 <ListItemIcon>
