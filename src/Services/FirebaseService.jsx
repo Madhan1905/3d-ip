@@ -385,6 +385,21 @@ export const updateDeliveryFee = (value) => {
     })
 }
 
+export const updatePrimeFee = (value) => {
+    return new Promise((resolve, reject) => {
+        const dataBase = firebase.firestore();
+        let collectionRef = dataBase.collection('App_Configuration');
+
+        let promoRef = collectionRef.doc('Delivery');
+        promoRef.update({PrimeFee:value})
+        .then(code => {
+            resolve("Success");
+        }).catch(error => {
+            reject(error);
+        })
+    })
+}
+
 export const updateOrderCategories = (value,enabled) => {
     return new Promise((resolve, reject) => {
         let databaseRef = firebase.database().ref(`/Pincodes`)
