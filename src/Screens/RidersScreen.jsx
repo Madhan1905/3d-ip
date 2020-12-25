@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SideNavComponent from '../Components/SideNavComponent';
-import { getRiders,addRider } from '../Services/FirebaseService';
+import { getRiders,addRider,deleteRider } from '../Services/FirebaseService';
+import DeleteIcon from '@material-ui/icons/Delete';
 import * as firebase from "firebase";
 require('firebase/auth');
 
@@ -8,6 +9,7 @@ const RidersScreen = () => {
     const [riders,setRiders] = useState([]);
     const [loading,setLoading] = useState(true);
     const [riderInfo,setRiderInfo] = useState(["",""]);
+    const [refresh,setRefresh] = useState(false);
     const [otp,setOtp] = useState("");
     const [otpSent,setOtpSent] = useState(false);
     const [adding,setAdding] = useState(false);
@@ -29,7 +31,7 @@ const RidersScreen = () => {
         //       }
         //     }
         //   );
-    },[adding])
+    },[adding,refresh])
 
     const updateRiderDetails = (value,index) => {
         let tempArray = riderInfo.slice();
@@ -84,7 +86,13 @@ const RidersScreen = () => {
                             <ul>
                                 {riders.map((rider,index) => (
                                     <li key = {index}>
-                                    {rider.name}-{rider.phone}
+                                        <div className = "row">
+                                            <span className = "col-3">{rider.name}-{rider.phone}</span>
+                                            <DeleteIcon onClick = {() => {
+                                                deleteRider(rider.phone);
+                                                setRefresh(!refresh);
+                                            }}/>
+                                        </div>
                                     </li>
                                 ))}
                             </ul>

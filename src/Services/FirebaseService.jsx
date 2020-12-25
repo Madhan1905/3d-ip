@@ -301,6 +301,22 @@ export const addRider = (details) => {
     })
 }
 
+export const deleteRider = (phone) => {
+    return new Promise(async (resolve, reject) => {
+        const dataBase = firebase.firestore();
+        let collectionRef = dataBase.collection('Riders');
+        collectionRef.doc(`+91${phone}`).delete()
+        .then(() => {
+            resolve("Done")
+            // user.updateProfile({
+            //     displayName: details[0],
+            // }).then(() => {
+            //     resolve("Done")
+            // })
+        }).catch(error => reject(error))
+    })
+}
+
 export const updateRiderDetails = (userId,id,riderName) => {
     return new Promise(async (resolve, reject) => {
         const dataBase = firebase.firestore();
