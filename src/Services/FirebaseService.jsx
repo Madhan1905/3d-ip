@@ -347,6 +347,31 @@ export const updateOrderStatus = (userId,id,status,selectedRider,selectionArray)
     })
 }
 
+export const completeOrderStatus = (userId,id) => {
+    return new Promise(async (resolve, reject) => {
+        const databaseRef = firebase.database().ref(`/AppOrders/OrderForApprove/${userId}`)
+        databaseRef.once(`value`).then((result) => {
+            console.log(result.val())
+            databaseRef.update({[id]:null})
+            .then(res => {
+                const dataBase = firebase.firestore();
+                let collectionRef = dataBase.collection('App_Users');
+                let UserDocument = collectionRef.doc(userId);
+
+                let ordersRef = UserDocument.collection('Order Details').doc(id);
+                ordersRef.update({riderAssigned: 'Completed'})
+                .then(res => {
+                    resolve(res);
+                }).catch(error => {
+                    console.log(error);
+                })
+            }).catch(error => {
+                reject(error);
+            })
+        })
+    })
+}
+
 export const getOrderCategories = () => {
     return new Promise((resolve, reject) => {
         let databaseRef = firebase.database().ref(`/Pincodes`)

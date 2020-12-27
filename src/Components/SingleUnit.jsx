@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useEffect } from 'react';
-import { fetchImage, fetchOrderDetails, updateOrderStatus, updateRiderDetails } from '../Services/FirebaseService';
+import { fetchImage, fetchOrderDetails, updateOrderStatus, updateRiderDetails, completeOrderStatus } from '../Services/FirebaseService';
 
 const SingleUnit = (props) => {
 
@@ -154,7 +154,8 @@ export const OrderUnit = (props) => {
                             </div>
                             <div className = "row">
                                 <label className = "col-2">Address:</label>
-                                {`${orderDetails.address.name},${orderDetails.address.no},${orderDetails.address.street},${orderDetails.address.city}-${orderDetails.address.pin}`}
+                                {orderDetails.address ? `${orderDetails.address.name},${orderDetails.address.no},${orderDetails.address.street},
+                                    ${orderDetails.address.city}-${orderDetails.address.pin}` : "Pickup"}
                             </div>
                             <div className = "row">
                                 <label className = "col-2">Order Status:</label>
@@ -165,7 +166,7 @@ export const OrderUnit = (props) => {
                     }
                 </div>
                 <div className = "col-4">
-                    {(props.orderStatus === "Packaged" || props.orderStatus === "Assigned") && <div className = "row">
+                    {((props.orderStatus === "Packaged" || props.orderStatus === "Assigned") && (orderDetails.address)) && <div className = "row">
                         <label className = "col-4">Assign to:</label>
                         <select 
                             className = "col-6"
@@ -202,13 +203,29 @@ export const OrderUnit = (props) => {
                         </div>}
                         {props.orderStatus === "Packaged" &&
                         <div className = "col-11" style = {{textAlignLast:"end"}}>
-                            <button 
+                            {orderDetails.address ? <button 
                                 className = {`btn btn-primary btn-sm` }
                                 onClick = {() => assignOrder("Assigned")}
                                 disabled = {selectedRider === "default"}
                             >
-                                Ok
-                            </button>
+                                OK
+                            </button> :
+                            <button 
+                                className = {`btn btn-primary btn-sm` }
+                                onClick = {() => {
+                                    setLoading(true);
+                                    setStatusLoad(true);
+                                    completeOrderStatus(props.userId,props.orderId)
+                                    .then(() => {
+                                        setLoading(false);
+                                        setStatusLoad(false);
+                                        props.setOrderModified(!props.orderModified)
+                                    })
+                                }}
+                                disabled = {selectedRider === "default"}
+                            >
+                                Delivered
+                            </button>}
                         </div>}
                     </> :
                     <div className = "col-11" style = {{textAlignLast:"end"}}>
