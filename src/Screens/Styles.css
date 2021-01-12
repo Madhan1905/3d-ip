@@ -173,3 +173,15 @@ hr {
 .nav-link {
     cursor: pointer;
 }
+
+.group-box {
+    border: 1px black solid;
+    border-radius: 5px;
+    margin-bottom: 50px;
+}
+
+.legend {
+    width:auto;
+    margin-left: 1em; 
+    padding: 0.2em 0.8em;
+}
