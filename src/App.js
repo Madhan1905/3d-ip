@@ -10,6 +10,7 @@ import AnalyticsScreen from './Screens/AnalyticsScreen';
 import OrdersScreen from './Screens/OrdersScreen';
 import ConfigScreen from './Screens/ConfigScreen';
 import RidersScreen from './Screens/RidersScreen';
+import UserHome from './UserScreens/UserHome';
 
 var firebaseConfig = {
   apiKey: "AIzaSyAHYWo7RgaH9GUsmpqOQFnu9V7IGyu10Gs",
@@ -27,7 +28,8 @@ const App = () => {
     <div>
       <Router>
         <Switch>
-          <Route path = '/' exact component = {LoginScreen}/>
+          <Route path = '/' exact component = {UserHome}/>
+          <Route path = '/admin' component = {LoginScreen}/>
           <Route path = '/login' component = {LoginScreen}/>
           <AuthenticatedRoute path = '/dashboard' component = {DashboardScreen}/>
           <AuthenticatedRoute path = '/users' component = {UsersScreen}/>
