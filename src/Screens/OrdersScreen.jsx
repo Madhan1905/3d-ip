@@ -23,7 +23,7 @@ const OrdersScreen = () => {
         getOrders().then(result => {
             getRiders().then(rider_details => {
                 SetRiders(rider_details)
-                setOrders(result)
+                if(result != null)setOrders(result)
                 setloading(false)
             }).catch(error => console.log(error))
         }).catch(error => console.log(error))

@@ -254,15 +254,17 @@ export const fetchOrderDetails = (id,userId) => {
         const dataBase = firebase.firestore();
         let collectionRef = dataBase.collection('App_Users');
         let UserDocument = collectionRef.doc(userId)
-
-        let ordersRef = UserDocument.collection('Order Details').doc(id);
-        ordersRef.get()
+        
+        UserDocument.get().then(result => {
+            let ordersRef = UserDocument.collection('Order Details').doc(id);
+            ordersRef.get()
             .then((order) => {
-                resolve({...order.data(),id:order.id})
+                resolve({...order.data(),id:order.id,userName:result.data().name})
             })
             .catch(error => {
                 reject(error)
-            })
+            })  
+        })
     })
 }
 

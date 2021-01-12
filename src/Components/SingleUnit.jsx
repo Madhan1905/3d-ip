@@ -111,6 +111,10 @@ export const OrderUnit = (props) => {
                         <label className = "col-2">Order Slot:</label>
                         {`${orderDetails.slot}`}
                     </div>
+                    <div className = "row">
+                        <label className = "col-2">Order Details:</label>
+                        {`${orderDetails.phone} - ${orderDetails.userName}`}
+                    </div>
                     {!loading?
                         <span>
                             <div className = "row">
@@ -128,7 +132,7 @@ export const OrderUnit = (props) => {
                                                         case 3 : quantity = "250 g"; break; 
                                                     }
                                                     return(
-                                                        <li key = {product.id}>
+                                                        <li key = {`${product.id}${quantity}`}>
                                                             <input 
                                                                 readOnly = {props.orderStatus === "Picked" ? false : true}
                                                                 type="checkbox" 
@@ -222,7 +226,6 @@ export const OrderUnit = (props) => {
                                         props.setOrderModified(!props.orderModified)
                                     })
                                 }}
-                                disabled = {selectedRider === "default"}
                             >
                                 Delivered
                             </button>}
